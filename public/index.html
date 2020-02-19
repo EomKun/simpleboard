@@ -16,7 +16,11 @@
     <button id="getAllMember">모든 멤버 보기</button>
     <div id="all_div"></div>
     <script>
-        
+        function deleteMember(_id){
+            $.post("/member/delete", { _id}, function(returnData){
+                alert(returnData.msg);
+            });
+        }
 
         function display(id, name, age, married){
             $.cookie("_id", id);
@@ -66,7 +70,8 @@
                     returnData.msg.forEach((element) => {
                         result += `<tr><td onclick="display('${element._id}', '${element.name}', ${element.age}, ${element.married})">
                             ${element._id}</td><td>${element.name}</td><td>${element.age}</td><td>${element.married}</td>`;
-                        
+                        //result += `<td><button onclick="updateMember()">수정</button></td>`;
+                        result += `<td><button onclick="deleteMember('${element._id}')">삭제</button></td></tr>`;
                     });
                     result += "</table>";
 

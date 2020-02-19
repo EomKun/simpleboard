@@ -14,6 +14,18 @@ MongoClient.connect(url, function(err, db) {
     }
 });
 
+router.post("/delete", (req, res) => {
+    const myquery = { _id: mongo.ObjectId(req.body._id) };
+    dbo.collection("member").deleteOne(myquery, function(err, result) {
+        if (err) {
+            console.log(err);
+            res.json({ msg: false });
+        } else {
+            res.json({ msg: true });
+        }
+    });
+});
+
 router.post("/update", (req, res) => {
     const myquery = { _id: mongo.ObjectId(req.body._id) };
     const newvalues = { $set: { name: req.body.name, age: req.body.age, married:req.body.married } };
