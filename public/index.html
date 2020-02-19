@@ -4,25 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <title>Document</title>
 </head>
 <body>
-    <input placeholder="이름"><br>
-    <input placeholder="나이"><br>
-    <input type="checkbox">결혼여부<br>
+    <input id="name" placeholder="이름"><br>
+    <input id="age" placeholder="나이"><br>
+    <input type="checkbox" name="married">결혼여부<br>
     <button id="addMember">등록</button>
 
     <button id="getAllMember">모든 멤버 보기</button>
     <div id="all_div"></div>
     <script>
+       
+
+        function display(name, age, married){
+            $.cookie("_id", id);
+            console.log($.cookie("_id"));
+
+            $("#name").val(name);
+            $("#age").val(age);
+            if(married == ' false')     $("input[name='married']").prop("checked", true);
+            else            $("input[name='married']").prop("checked", false);
+        }
+
         $(document).ready(function (){
+            $("#addMember").click(function (){
+                const name = $("#name").val();
+                const age = $("#age").val();
+                const married = $("input[name='married']").is(":checked");
+                // alert(name + " : " + age + " : " + married);
+                const send_param = {
+                    name, age, married,
+                };
+
+                $.post("/member/add", send_param, function(returnData){
+                    alert(returnData.msg);
+                });
+            });
+
             $("#getAllMember").click(function (){
                 $.post("/member", {}, function (returnData){
                     console.log(returnData.msg);
                     let result = "<table><tr><td>아이디</td><td>이름</td><td>나이</td><td>결혼여부</td></tr>";
 
                     returnData.msg.forEach((element) => {
-                        result += `<tr><td>${element._id}</td><td>${element.name}</td><td>${element.age}</td><td>${element.married}</td></tr>`;
+                        result += `<tr><td onclick="display('${element.name}', ${element.age}, ${element.married})">
+                            ${element._id}</td><td>${element.name}</td><td>${element.age}</td><td>${element.married}</td></tr>`;
                     });
                     result += "</table>";
 
