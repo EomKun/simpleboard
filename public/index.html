@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <input placeholder="이름"><br>
+    <input placeholder="나이"><br>
+    <input type="checkbox">결혼여부<br>
+    <button id="addMember">등록</button>
+
+    <button id="getAllMember">모든 멤버 보기</button>
+    <div id="all_div"></div>
+    <script>
+        $(document).ready(function (){
+            $("#getAllMember").click(function (){
+                $.post("/member", {}, function (returnData){
+                    console.log(returnData.msg);
+                    let result = "<table><tr><td>아이디</td><td>이름</td><td>나이</td><td>결혼여부</td></tr>";
+
+                    returnData.msg.forEach((element) => {
+                        result += `<tr><td>${element._id}</td><td>${element.name}</td><td>${element.age}</td><td>${element.married}</td></tr>`;
+                    });
+                    result += "</table>";
+
+                    $("#all_div").html(result);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
