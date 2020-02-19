@@ -12,13 +12,13 @@
     <input id="age" placeholder="나이"><br>
     <input type="checkbox" name="married">결혼여부<br>
     <button id="addMember">등록</button>
-
+    <button id="updateMember">수정</button>
     <button id="getAllMember">모든 멤버 보기</button>
     <div id="all_div"></div>
     <script>
-       
+        
 
-        function display(name, age, married){
+        function display(id, name, age, married){
             $.cookie("_id", id);
             console.log($.cookie("_id"));
 
@@ -29,6 +29,21 @@
         }
 
         $(document).ready(function (){
+            $("#updateMember").click(function (){
+                const _id = $.cookie("_id");
+                const name = $("#name").val();
+                const age = $("#age").val();
+                const married = $("input[name='married']").is(":checked");
+                // alert(name + " : " + age + " : " + married);
+                const send_param = {
+                    _id, name, age, married,
+                };
+
+                $.post("/member/update", send_param, function(returnData){
+                    alert(returnData.msg);
+                });
+            });
+
             $("#addMember").click(function (){
                 const name = $("#name").val();
                 const age = $("#age").val();
@@ -49,8 +64,9 @@
                     let result = "<table><tr><td>아이디</td><td>이름</td><td>나이</td><td>결혼여부</td></tr>";
 
                     returnData.msg.forEach((element) => {
-                        result += `<tr><td onclick="display('${element.name}', ${element.age}, ${element.married})">
-                            ${element._id}</td><td>${element.name}</td><td>${element.age}</td><td>${element.married}</td></tr>`;
+                        result += `<tr><td onclick="display('${element._id}', '${element.name}', ${element.age}, ${element.married})">
+                            ${element._id}</td><td>${element.name}</td><td>${element.age}</td><td>${element.married}</td>`;
+                        
                     });
                     result += "</table>";
 

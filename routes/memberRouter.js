@@ -14,6 +14,19 @@ MongoClient.connect(url, function(err, db) {
     }
 });
 
+router.post("/update", (req, res) => {
+    const myquery = { _id: mongo.ObjectId(req.body._id) };
+    const newvalues = { $set: { name: req.body.name, age: req.body.age, married:req.body.married } };
+    dbo.collection("member").updateOne(myquery, newvalues, function(err, result) {
+        if (err) {
+            console.log(err);
+            res.json({ msg: false });
+        } else {
+            res.json({ msg: true });
+        }
+    });
+});
+
 router.post("/add", (req, res) => {
     dbo.collection("member").save({ 
         name: req.body.name, 
