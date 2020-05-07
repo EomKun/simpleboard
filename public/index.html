@@ -8,21 +8,39 @@
     <title>Document</title>
 </head>
 <body>
-    <input id="name" placeholder="이름"><br>
-    <input id="age" placeholder="나이"><br>
-    <input type="checkbox" name="married">결혼여부<br>
-    <button id="addMember">등록</button>
-    <button id="updateMember">수정</button>
-    <button id="getAllMember">모든 멤버 보기</button>
+    <fieldset>
+        <legend>회원:</legend>
+        <input id="name" placeholder="이름"><br>
+        <input id="age" placeholder="나이"><br>
+        <input type="checkbox" name="married">결혼여부<br>
+        <button id="addMember">등록</button>
+        <button id="updateMember">수정</button>
+        <button id="getAllMember">모든 멤버 보기</button>
+    </fieldset>
     <div id="all_div"></div>
+
+    <fieldset>
+        <legend>댓글:</legend>
+        <input id="userid" placeholder="사용자아이디"><br>
+        <input id="comment" placeholder="댓글"><br>
+        <button id="addComment">등록</button>
+        <button id="getAllComment">모든 댓글 보기</button>
+    </fieldset>
+    <div id="all_comment_div"></div>
     <script>
         function deleteMember(_id){
-            $.post("/member/delete", { _id}, function(returnData){
+            $.post("/member/delete", { _id }, function(returnData){
                 alert(returnData.msg);
             });
         }
 
-        function display(id, name, age, married){
+        function deleteComment(_id){
+            $.post("/comment/delete", { _id }, function(returnData){
+                alert(returnData.msg);
+            });
+        }
+
+        function display_member(id, name, age, married){
             $.cookie("_id", id);
             console.log($.cookie("_id"));
 
@@ -33,6 +51,42 @@
         }
 
         $(document).ready(function (){
+            /////////////////////////////////////////////////////////////////////////////////////
+            // comment
+            /////////////////////////////////////////////////////////////////////////////////////
+            $("#getAllComment").click(function (){
+                $.post("/comment", {}, function (returnData){
+                    let result = "<table><tr><td>아이디</td><td>닉네임</td><td>댓글</td></tr>";
+
+                    returnData.msg.forEach((element) => {
+                        result += `<tr><td>${element.commenter}</td><td>${element.comment_user[0].name}</td><td>${element.comment}</td>`;
+                        result += `<td><button onclick="updateMember()">수정</button></td>`;
+                        result += `<td><button onclick="deleteComment('${element._id}')">삭제</button></td></tr>`;
+                    });
+                    result += "</table>";
+
+                    $("#all_comment_div").html(result);
+                });
+            });
+
+            $("#addComment").click(function (){
+                const _id = $("#userid").val();
+                const comment = $("#comment").val();
+
+                const send_param = {
+                    _id,
+                    comment,
+                };
+
+                $.post("/comment/add", send_param, function (returnData){
+                    alert(returnData.msg);
+                });
+            });
+
+
+            /////////////////////////////////////////////////////////////////////////////////////
+            // User
+            /////////////////////////////////////////////////////////////////////////////////////
             $("#updateMember").click(function (){
                 const _id = $.cookie("_id");
                 const name = $("#name").val();
@@ -68,7 +122,7 @@
                     let result = "<table><tr><td>아이디</td><td>이름</td><td>나이</td><td>결혼여부</td></tr>";
 
                     returnData.msg.forEach((element) => {
-                        result += `<tr><td onclick="display('${element._id}', '${element.name}', ${element.age}, ${element.married})">
+                        result += `<tr><td onclick="display_member('${element._id}', '${element.name}', ${element.age}, ${element.married})">
                             ${element._id}</td><td>${element.name}</td><td>${element.age}</td><td>${element.married}</td>`;
                         //result += `<td><button onclick="updateMember()">수정</button></td>`;
                         result += `<td><button onclick="deleteMember('${element._id}')">삭제</button></td></tr>`;

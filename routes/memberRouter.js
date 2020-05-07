@@ -50,6 +50,7 @@ router.post("/add", (req, res) => {
             res.json({ msg: false });
         } else {
             if(result) {
+                console.log(result);
                 res.json({ msg: result });
             }   
         }
